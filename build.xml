@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project
+ name="mapred"
+ default="rank"
+ basedir="."
+>
+<description>
+Build script for the "ceteri-mapred" examples of using Hadoop, on Google Code.
+
+Paco NATHAN    pacoid@cs.stanford.edu
+http://code.google.com/p/ceteri-mapred/
+</description>
+
+    <!-- property settings -->
+
+<property
+ name="src.dir"
+ location="${basedir}"
+/>
+<property
+ name="lib.dir"
+ location="${basedir}/lib"
+/>
+<property
+ name="build.dir"
+ location="${basedir}/classes"
+/>
+<property
+ name="resource.dir"
+ location="${basedir}/res"
+/>
+<property
+ name="docs.dir"
+ location="${basedir}/docs/api"
+/>
+<property
+ name="hadoop.version"
+ value="0.15.3"
+/>
+<property
+ name="hadoop.dir"
+ value="${basedir}/../../hadoop-${hadoop.version}"
+/>
+<property
+ name="text.data"
+ location="${basedir}/data.txt"
+/>
+<property
+ name="app.jar"
+ location="${basedir}/app.jar"
+/>
+
+
+    <!-- classpath definitions -->
+
+<path
+ id="base.path"
+>
+</path>
+
+<path
+ id="compile.classpath"
+>
+<path
+ refid="base.path"
+/>
+<pathelement
+ path="${src.dir}"
+/>
+<fileset dir="${lib.dir}">
+ <include name="*.jar"/>
+</fileset>
+<pathelement
+ path="${basedir}"
+/>
+</path>
+
+<path
+ id="build.classpath"
+>
+<pathelement
+ location="${build.dir}"
+/>
+<fileset dir="${lib.dir}">
+ <include name="*.jar"/>
+</fileset>
+<pathelement
+ location="${hadoop.dir}/hadoop-${hadoop.version}-core.jar"
+/>
+</path>
+
+
+    <!--
+       ######################################################################
+       target definitions:
+       lifecycle tasks - clean, compile, commit, etc.
+       ######################################################################
+    -->
+
+<target
+ name="clean"
+ description="remove temporary files"
+>
+<defaultexcludes remove="**/*~"/>
+<delete>
+<fileset dir=".">
+    <include name="**/*~"/>
+</fileset>
+</delete>
+<delete dir="${build.dir}"/>
+<delete dir="${docs.dir}"/>
+<delete file="${basedir}/graph.tsv"/>
+</target>
+
+
+<target
+ name="compile"
+ description="compile all Java classes"
+>
+<mkdir dir="${build.dir}"/>
+<javac
+ classpathref="build.classpath"
+ destdir="${build.dir}"
+ debug="on"
+ deprecation="on"
+>
+<compilerarg value="-Xlint:unchecked"/>
+<src path="${src.dir}"/>
+</javac>
+</target>
+
+
+<target
+  name="rank"
+  description="misc. testing"
+  depends="compile"
+>
+<property
+ name="data.file"
+ location="${basedir}/data/data.txt"
+/>
+<property
+ name="lang.code"
+ value="en"
+/>
+<property
+ name="graph.file"
+ location="${basedir}/graph.tsv"
+/>
+<java
+ classname="com.sharethis.textrank.TextRank"
+ fork="true"
+>
+<classpath>
+  <pathelement location="${build.dir}"/>
+  <!-- Project classes and tests -->
+  <path refid="compile.classpath"/>
+  <!-- All jars -->
+</classpath>
+<sysproperty key="nlp.resources" value="${resource.dir}"/>
+<arg value="${resource.dir}/log4j.properties"/>
+<arg value="${data.file}"/>
+<arg value="${lang.code}"/>
+<arg value="${graph.file}"/>
+</java>
+</target>
+
+</project>
