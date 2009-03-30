@@ -6,10 +6,12 @@
  basedir="."
 >
 <description>
-Build script for the "ceteri-mapred" examples of using Hadoop, on Google Code.
+Ant build script for
+Open source Java implementation of the TextRank algorithm by Mihalcea, et al.
+    http://lit.csci.unt.edu/index.php/Graph-based_NLP
 
-Paco NATHAN    pacoid@cs.stanford.edu
-http://code.google.com/p/ceteri-mapred/
+Paco NATHAN    paco@sharethis.com
+http://github.com/sharethis/textrank/
 </description>
 
     <!-- property settings -->
@@ -134,7 +136,6 @@ http://code.google.com/p/ceteri-mapred/
 <target
   name="rank"
   description="misc. testing"
-  depends="compile"
 >
 <property
  name="data.file"

@@ -75,15 +75,15 @@ public class
     {
 	this.value = value;
 
-	this.link_rank = MathUtils.round(link_rank, 1);
-	this.count_rank = MathUtils.round(count_rank, 1);
-	this.synset_rank = MathUtils.round(synset_rank, 1);
-
 	this.metric = Math.sqrt(((1.0D * link_rank * link_rank) +
-				 (1.0D * count_rank * count_rank) +
-				 (1.0D * synset_rank * synset_rank)
+				 (0.5D * count_rank * count_rank) +
+				 (1.5D * synset_rank * synset_rank)
 				 ) / 3.0D
 				);
+
+	this.link_rank = MathUtils.round(link_rank, 2);
+	this.count_rank = MathUtils.round(count_rank, 2);
+	this.synset_rank = MathUtils.round(synset_rank, 2);
 
 	if (log_.isDebugEnabled()) {
 	    log_.debug("mv: " + metric + " " + link_rank + " " + count_rank + " " + synset_rank + " " + value.text);
