@@ -29,28 +29,21 @@ http://github.com/sharethis/textrank/
  location="${basedir}/classes"
 />
 <property
- name="resource.dir"
+ name="res.dir"
  location="${basedir}/res"
 />
 <property
  name="docs.dir"
  location="${basedir}/docs/api"
 />
-<property
- name="hadoop.version"
- value="0.15.3"
-/>
-<property
- name="hadoop.dir"
- value="${basedir}/../../hadoop-${hadoop.version}"
-/>
+
 <property
  name="text.data"
  location="${basedir}/data.txt"
 />
 <property
  name="app.jar"
- location="${basedir}/app.jar"
+ location="${basedir}/textrank.jar"
 />
 
 
@@ -87,9 +80,6 @@ http://github.com/sharethis/textrank/
 <fileset dir="${lib.dir}">
  <include name="*.jar"/>
 </fileset>
-<pathelement
- location="${hadoop.dir}/hadoop-${hadoop.version}-core.jar"
-/>
 </path>
 
 
@@ -111,6 +101,7 @@ http://github.com/sharethis/textrank/
 </fileset>
 </delete>
 <delete dir="${build.dir}"/>
+<delete file="${app.jar}"/>
 <delete dir="${docs.dir}"/>
 <delete file="${basedir}/graph.tsv"/>
 </target>
@@ -130,6 +121,21 @@ http://github.com/sharethis/textrank/
 <compilerarg value="-Xlint:unchecked"/>
 <src path="${src.dir}"/>
 </javac>
+</target>
+
+
+<target
+ name="jar"
+ description="build a JAR"
+>
+<jar
+ destfile="${app.jar}"
+ basedir="${build.dir}"
+>
+<manifest>
+    <attribute name="Main-Class" value="com.sharethis.textrank.TextRank"/>
+</manifest>
+</jar>
 </target>
 
 
@@ -159,8 +165,8 @@ http://github.com/sharethis/textrank/
   <path refid="compile.classpath"/>
   <!-- All jars -->
 </classpath>
-<sysproperty key="nlp.resources" value="${resource.dir}"/>
-<arg value="${resource.dir}/log4j.properties"/>
+<sysproperty key="nlp.resources" value="${res.dir}"/>
+<arg value="${res.dir}/log4j.properties"/>
 <arg value="${data.file}"/>
 <arg value="${lang.code}"/>
 <arg value="${graph.file}"/>
