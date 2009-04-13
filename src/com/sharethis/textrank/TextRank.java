@@ -32,6 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.sharethis.textrank;
 
+import com.sharethis.common.IOUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -92,37 +94,6 @@ public class
 
     protected long start_time = 0L;
     protected long elapsed_time = 0L;
-
-
-    /**
-     * Reads the given input file as text, returning a String.
-     *
-     * @param fileName - The name of input file.
-     * @return the full text as a String
-     * @throws IOException in case of I/O error.
-     */
-
-    public static String
-	readFile (final String file_name)
-	throws IOException
-    {
-        final Reader r =
-	    new BufferedReader(new InputStreamReader(new FileInputStream(file_name), "UTF-8"));
-        try {
-	    final StringBuilder sb = new StringBuilder();
-	    final char[] buff = new char[256];
-	    int len;
-
-	    while ((len = r.read(buff)) > -1) {
-		sb.append(buff, 0, len);
-	    }
-
-	    return sb.toString();
-        }
-	finally {
-            r.close();
-        }
-    }
 
 
     /**
@@ -204,14 +175,37 @@ public class
 	toString ()
     {
 	final TreeSet<MetricVector> key_phrase_list = new TreeSet<MetricVector>(metric_space.values());
+	final StringBuilder sb = new StringBuilder();
 
 	for (MetricVector mv : key_phrase_list) {
 	    if (mv.metric >= MIN_NORMALIZED_RANK) {
-		if (LOG.isInfoEnabled()) {
-		    LOG.info(mv.render() + " " + mv.value.text);
-		}
+		sb.append(mv.render()).append("\t").append(mv.value.text).append("\n");
 	    }
 	}
+
+	return sb.toString();
+    }
+
+
+    /**
+     * Accessor for the graph.
+     */
+
+    public Graph
+	getGraph ()
+    {
+	return graph;
+    }
+
+
+    /**
+     * Accessor for the resulting key phrase list.
+     */
+
+    public HashMap<NGram, MetricVector>
+	getMetricSpace ()
+    {
+	return metric_space;
     }
 
 
@@ -412,7 +406,7 @@ public class
 
 	// load the text from a file
 
-	final String text = readFile(data_file);
+	final String text = IOUtils.readFile(data_file);
 
 	// filter out overly large files
 
