@@ -145,7 +145,7 @@ http://github.com/sharethis/textrank/
 >
 <property
  name="data.file"
- location="${basedir}/data/data.txt"
+ location="${basedir}/sample.txt"
 />
 <property
  name="lang.code"

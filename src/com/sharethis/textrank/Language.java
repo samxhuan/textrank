@@ -70,10 +70,10 @@ public abstract class
 	Language lang = null;
 
 	if ("en".equals(lang_code)) {
-	    lang = new LanguageEnglish(resource_path);
+	    lang = new LanguageEnglish(resource_path + "/" + lang_code);
 	}
 	else if ("es".equals(lang_code)) {
-	    lang = new LanguageSpanish(resource_path);
+	    lang = new LanguageSpanish(resource_path + "/" + lang_code);
 	}
 
 	return lang;

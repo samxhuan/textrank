@@ -4,6 +4,17 @@ Open source Java implementation of the TextRank algorithm by Mihalcea, et al.
 Paco NATHAN    paco@sharethis.com
 http://github.com/sharethis/textrank/
 
+---------
+
+simple test:
+	ant clean compile rank
+
+test with a specific data file FOO.txt
+
+	ant -Ddata.file=FOO.txt clean compile rank
+
+build the JAR for export to another project:
+	ant clean compile jar
 
 ---------
 
