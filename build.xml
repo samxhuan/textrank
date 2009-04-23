@@ -165,10 +165,13 @@ http://github.com/sharethis/textrank/
   <path refid="compile.classpath"/>
   <!-- All jars -->
 </classpath>
+<!--
 <sysproperty key="nlp.resources" value="${res.dir}"/>
+ -->
 <arg value="${res.dir}/log4j.properties"/>
-<arg value="${data.file}"/>
+<arg value="${res.dir}"/>
 <arg value="${lang.code}"/>
+<arg value="${data.file}"/>
 <arg value="${graph.file}"/>
 </java>
 </target>

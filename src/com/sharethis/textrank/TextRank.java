@@ -391,20 +391,33 @@ public class
 	main (final String[] args)
 	throws Exception
     {
-	final String log4j_conf = args[0];
-	final String data_file = args[1];
-	final String lang_code = args[2];
-	final String graph_file = args[3];
+	/** /
+	final String res_path =
+	    new File(System.getProperty(NLP_RESOURCES)).getPath();
+	/* */
 
-	final TextRank tr = new TextRank();
+	final String log4j_conf = args[0];
+	final String res_path = args[1];
+	final String lang_code = args[2];
+	final String data_file = args[3];
+	final String graph_file = args[4];
 
         // set up logging for debugging and instrumentation
         
         PropertyConfigurator.configure(log4j_conf);
 
-	// load the text from a file
+	// load the sample text from a file
 
 	final String text = IOUtils.readFile(data_file);
+
+	// instantiate the TextRank object
+
+	final TextRank tr = new TextRank();
+
+	final Language lang =
+	    Language.buildLanguage(lang_code, res_path);
+
+	WordNet.buildDictionary(res_path + "/" + lang_code);
 
 	// filter out overly large files
 
@@ -413,18 +426,6 @@ public class
 
 	if (text.length() > MAX_WORDNET_TEXT) {
 	    use_wordnet = false;
-	}
-
-	// set up the language model
-
-	final String res_path =
-	    new File(System.getProperty(NLP_RESOURCES)).getPath();
-
-	final Language lang =
-	    Language.buildLanguage(lang_code, res_path);
-
-	if (use_wordnet) {
-	    WordNet.buildDictionary(res_path + "/" + lang_code);
 	}
 
 	// main entry point for the algorithm
