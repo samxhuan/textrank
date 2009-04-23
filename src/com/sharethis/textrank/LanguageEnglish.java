@@ -102,7 +102,7 @@ public class
 
             tagger_en =
 		new ParserTagger((new File(path, "opennlp/tag.bin.gz")).getPath(),
-				 (new File(path, "opennlp/tag.dict")).getPath(),
+				 (new File(path, "opennlp/tagdict")).getPath(),
 				 false
 				 );
 
