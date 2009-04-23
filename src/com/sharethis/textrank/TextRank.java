@@ -219,10 +219,6 @@ public class
 	buildGraph (final String text, final String res_path, final Language lang, final boolean use_wordnet)
 	throws Exception
     {
-	if (use_wordnet) {
-	    WordNet.buildDictionary(res_path);
-	}
-
 	//////////////////////////////////////////////////
 	// PASS 1: construct a graph from PoS tags
 
@@ -400,6 +396,8 @@ public class
 	final String lang_code = args[2];
 	final String graph_file = args[3];
 
+	final TextRank tr = new TextRank();
+
         // set up logging for debugging and instrumentation
         
         PropertyConfigurator.configure(log4j_conf);
@@ -425,9 +423,11 @@ public class
 	final Language lang =
 	    Language.buildLanguage(lang_code, res_path);
 
-	// main entry point for the algorithm
+	if (use_wordnet) {
+	    WordNet.buildDictionary(res_path + "/" + lang_code);
+	}
 
-	final TextRank tr = new TextRank();
+	// main entry point for the algorithm
 
 	tr.buildGraph(text, res_path, lang, use_wordnet);
 	LOG.info(tr);
