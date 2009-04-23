@@ -90,10 +90,23 @@ public class
     protected final Graph graph = new Graph();
     protected final HashMap<NGram, MetricVector> metric_space = new HashMap<NGram, MetricVector>();
 
+    protected Language lang = null;
     protected Graph ngram_subgraph = null;
 
     protected long start_time = 0L;
     protected long elapsed_time = 0L;
+
+
+    /**
+     * Constructor.
+     */
+
+    public
+	TextRank (final String lang_code, final String res_path)
+    {
+	this.lang = Language.buildLanguage(lang_code, res_path);
+	WordNet.buildDictionary(res_path + "/" + lang_code);
+    }
 
 
     /**
@@ -216,7 +229,7 @@ public class
      */
 
     public void
-	buildGraph (final String text, final String res_path, final Language lang, final boolean use_wordnet)
+	buildGraph (final String text, final boolean use_wordnet)
 	throws Exception
     {
 	//////////////////////////////////////////////////
@@ -412,12 +425,7 @@ public class
 
 	// instantiate the TextRank object
 
-	final TextRank tr = new TextRank();
-
-	final Language lang =
-	    Language.buildLanguage(lang_code, res_path);
-
-	WordNet.buildDictionary(res_path + "/" + lang_code);
+	final TextRank tr = new TextRank(lang_code, res_path);
 
 	// filter out overly large files
 
@@ -430,7 +438,7 @@ public class
 
 	// main entry point for the algorithm
 
-	tr.buildGraph(text, res_path, lang, use_wordnet);
+	tr.buildGraph(text, use_wordnet);
 	LOG.info(tr);
     }
 }
