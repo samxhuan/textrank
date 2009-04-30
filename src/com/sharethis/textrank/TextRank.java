@@ -51,6 +51,10 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import net.didion.jwnl.data.POS;
 
@@ -85,6 +89,7 @@ public class
     public final static double MIN_NORMALIZED_RANK = 0.05D;
     public final static int MAX_NGRAM_LENGTH = 5;
     public final static long MAX_WORDNET_TEXT = 2000L;
+    public final static long MAX_WORDNET_GRAPH = 600L;
 
 
     /**
@@ -193,7 +198,12 @@ public class
 
 	Graph synset_subgraph = new Graph();
 
-	if (use_wordnet) {
+	// filter for edge cases
+
+	if (use_wordnet &&
+	    (text.length() < MAX_WORDNET_TEXT) &&
+	    (graph.size() < MAX_WORDNET_GRAPH)
+	    ) {
 	    // test the lexical value of nouns and adjectives in WordNet
 
 	    for (Node n: graph.values()) {
@@ -453,16 +463,41 @@ public class
 	boolean use_wordnet = true; // false
 	use_wordnet = use_wordnet && ("en".equals(lang_code));
 
-	if (text.length() > MAX_WORDNET_TEXT) {
-	    use_wordnet = false;
-	}
-
 	// main entry point for the algorithm
 
 	final TextRank tr = new TextRank(res_path, lang_code);
-
 	tr.prepCall(text, use_wordnet);
-	tr.call();
+
+	// wrap the call in a timed task
+
+	final FutureTask<Collection<MetricVector>> task = new FutureTask<Collection<MetricVector>>(tr);
+	Collection<MetricVector> answer = null;
+
+	final Thread thread = new Thread(task);
+	thread.run();
+
+	try {
+	    //answer = task.get();  // run until complete
+	    answer = task.get(15000L, TimeUnit.MILLISECONDS); // timeout in N ms
+	}
+	catch (ExecutionException e) {
+	    LOG.error("exec exception", e);
+	}
+	catch (InterruptedException e) {
+	    LOG.error("interrupt", e);
+	}
+	catch (TimeoutException e) {
+	    LOG.error("timeout", e);
+
+	    // Unfortunately, with graph size > 700, even read-only
+	    // access to WordNet on disk will block and cause the
+	    // thread to be uninterruptable. None of the following
+	    // remedies work...
+
+	    //thread.interrupt();
+	    //task.cancel(true);
+	    return;
+	}
 
 	LOG.info(tr);
     }
