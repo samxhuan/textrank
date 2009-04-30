@@ -43,6 +43,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -68,7 +69,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 public class
     TextRank
-    implements Callable<Map<NGram, MetricVector>>
+    implements Callable<Collection<MetricVector>>
 {
     // logging
 
@@ -142,7 +143,7 @@ public class
      * build a graph of weighted key phrases.
      */
 
-    public Map<NGram, MetricVector>
+    public Collection<MetricVector>
 	call ()
 	throws Exception
     {
@@ -306,7 +307,7 @@ public class
 
 	// return results
 
-	return metric_space;
+	return metric_space.values();
     }
 
 

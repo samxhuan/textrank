@@ -2,7 +2,7 @@
 
 <project
  name="textrank"
- default="rank"
+ default="run"
  basedir="."
 >
 <description>
@@ -142,8 +142,8 @@ http://github.com/sharethis/textrank/
 
 
 <target
- name="rank"
- description="misc. testing"
+ name="run"
+ description="run the algorithm on a text document"
  depends="compile"
 >
 <property

@@ -1,5 +1,7 @@
 Open source Java implementation of the TextRank algorithm by Mihalcea, et al.
-    http://lit.csci.unt.edu/index.php/Graph-based_NLP
+
+See also:
+  http://lit.csci.unt.edu/index.php/Graph-based_NLP
 
 Paco NATHAN    paco@sharethis.com
 http://github.com/sharethis/textrank/
@@ -7,14 +9,14 @@ http://github.com/sharethis/textrank/
 ---------
 
 simple test:
-	ant clean compile rank
+	ant run
 
 test with a specific data file FOO.txt
 
-	ant -Ddata.file=FOO.txt clean compile rank
+	ant -Ddata.file=FOO.txt run
 
 build the JAR for export to another project:
-	ant clean compile jar
+	ant jar
 
 ---------
 
