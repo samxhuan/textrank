@@ -48,16 +48,16 @@ import org.tartarus.snowball.ext.spanishStemmer;
  * Implementation of Spanish-specific tools for natural language
  * processing.
  *
- * @author Paco NATHAN
+ * @author paco@sharethis.com
  */
 
 public class
     LanguageSpanish
-    extends Language
+    extends LanguageModel
 {
     // logging
 
-    private final static Log log_ =
+    private final static Log LOG =
         LogFactory.getLog(LanguageSpanish.class.getName());
 
 
@@ -72,11 +72,13 @@ public class
 
 
     /**
-     * Constructor.
+     * Constructor. Not quite a Singleton pattern but close enough
+     * given the resources required to be loaded ONCE.
      */
 
     public
 	LanguageSpanish (final String path)
+	throws Exception
     {
 	if (splitter_es == null) {
 	    loadResources(path);
@@ -90,24 +92,19 @@ public class
 
     public void
 	loadResources (final String path)
+	throws Exception
     {
-        try {
-	    splitter_es =
-		new SentenceDetector((new File(path, "opennlp/SpanishSent.bin.gz")).getPath());
+	splitter_es =
+	    new SentenceDetector((new File(path, "opennlp/SpanishSent.bin.gz")).getPath());
 
-	    tokenizer_es =
-		new Tokenizer((new File(path, "opennlp/SpanishTok.bin.gz")).getPath());
+	tokenizer_es =
+	    new Tokenizer((new File(path, "opennlp/SpanishTok.bin.gz")).getPath());
 
-            tagger_es =
-		new PosTagger((new File(path, "opennlp/SpanishPOS.bin.gz")).getPath());
+	tagger_es =
+	    new PosTagger((new File(path, "opennlp/SpanishPOS.bin.gz")).getPath());
 
-	    stemmer_es =
-		new spanishStemmer();
-        }
-	catch (Exception e) {
-            System.err.println("Error loading libraries for OpenNLP.");
-	    e.printStackTrace();
-        }
+	stemmer_es =
+	    new spanishStemmer();
     }
 
 

@@ -45,7 +45,7 @@ import org.apache.commons.math.util.MathUtils;
  * Implements a node in the TextRank graph, denoting some noun or
  * adjective morpheme.
  *
- * @author Paco NATHAN
+ * @author paco@sharethis.com
  */
 
 public class
@@ -91,9 +91,11 @@ public class
     {
         if (this.rank > that.rank) {
 	    return -1;
-	} else if (this.rank < that.rank) {
+	}
+	else if (this.rank < that.rank) {
 	    return 1;
-	} else {
+	}
+	else {
 	    return this.value.text.compareTo(that.value.text);
 	}
     }
@@ -193,7 +195,8 @@ public class
 		// adjust it for scale [0.0, 1.0]
 		adjusted_rank = (max_rank - min) / coeff;
 	    }
-	} else {
+	}
+	else {
 	    // consider the synsets of the one component keyword
 
 	    for (Node n : edges) {

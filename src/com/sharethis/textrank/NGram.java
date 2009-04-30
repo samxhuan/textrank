@@ -44,7 +44,7 @@ import org.apache.commons.logging.LogFactory;
  * Implements a wrapper for tallying an n-gram in the text contains of
  * selected keywords.
  *
- * @author Paco NATHAN
+ * @author paco@sharethis.com
  */
 
 public class
@@ -54,7 +54,7 @@ public class
 {
     // logging
 
-    private final static Log log_ =
+    private final static Log LOG =
         LogFactory.getLog(NGram.class.getName());
 
 
@@ -130,13 +130,17 @@ public class
     {
 	if (this.length > that.length) {
 	    return -1;
-	} else if (this.length < that.length) {
+	}
+	else if (this.length < that.length) {
 	    return 1;
-	} else if (this.getCount() > that.getCount()) {
+	}
+	else if (this.getCount() > that.getCount()) {
 	    return -1;
-	} else if (this.getCount() < that.getCount()) {
+	}
+	else if (this.getCount() < that.getCount()) {
 	    return 1;
-	} else {
+	}
+	else {
 	    return this.text.compareTo(that.text);
 	}
     }
@@ -177,7 +181,8 @@ public class
 
 		ngrams.put(gram_key, n);
 	    }
-	} else {
+	}
+	else {
 	    gram = (NGram) n.value;
 	    gram.contexts.add(context);
 	}
@@ -191,7 +196,7 @@ public class
      */
 
     public static Graph
-	collectNGrams (final Language lang, final Cache cache, final double rank_threshold)
+	collectNGrams (final LanguageModel lang, final Cache cache, final double rank_threshold)
 	throws Exception
     {
 	final Graph ngrams = new Graph();
@@ -216,8 +221,8 @@ public class
 			    ) {
 			    final NGram gram = buildNGram(ngrams, s, token_span, max_rank);
 
-			    if (log_.isDebugEnabled()) {
-				log_.debug("emit: " + gram.text + " @ " + gram.getCount() + " span " + gram.length);
+			    if (LOG.isDebugEnabled()) {
+				LOG.debug("emit: " + gram.text + " @ " + gram.getCount() + " span " + gram.length);
 			    }
 			}
 		    }
@@ -257,8 +262,8 @@ public class
 	    subgraph.dist_stats.addValue(n.rank);
 	    ngram_max_count = Math.max(gram.getCount(), ngram_max_count);
 
-	    if (log_.isDebugEnabled()) {
-		log_.debug(n.value.text + " " + ngram_max_count);
+	    if (LOG.isDebugEnabled()) {
+		LOG.debug(n.value.text + " " + ngram_max_count);
 	    }
 	}
 

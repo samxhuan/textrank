@@ -45,7 +45,7 @@ import org.apache.commons.math.stat.descriptive.SummaryStatistics;
 /**
  * An abstraction for handling the graph as a data object.
  *
- * @author Paco NATHAN
+ * @author paco@sharethis.com
  */
 
 public class
@@ -54,7 +54,7 @@ public class
 {
     // logging
 
-    private final static Log log_ =
+    private final static Log LOG =
         LogFactory.getLog(Graph.class.getName());
 
 
@@ -140,8 +140,8 @@ public class
 	    final double standard_error =
 		dist_stats.getStandardDeviation() / Math.sqrt((double) dist_stats.getN());
 
-	    if (log_.isInfoEnabled()) {
-		log_.info("iteration: " + k + " error: " + standard_error);
+	    if (LOG.isInfoEnabled()) {
+		LOG.info("iteration: " + k + " error: " + standard_error);
 	    }
 
 	    // swap in new rank values
@@ -169,9 +169,11 @@ public class
 			public int compare (Node n1, Node n2) {
 			    if (n1.rank > n2.rank) {
 				return -1;
-			    } else if (n1.rank < n2.rank) {
+			    }
+			    else if (n1.rank < n2.rank) {
 				return 1;
-			    } else {
+			    }
+			    else {
 				return 0;
 			    }
 			}
@@ -190,11 +192,11 @@ public class
 		dist_stats.addValue(n1.rank);
 	    }
 
-	    if (log_.isDebugEnabled()) {
-		log_.debug("n: " + n1.key + " " + n1.rank + " " + n1.marked);
+	    if (LOG.isDebugEnabled()) {
+		LOG.debug("n: " + n1.key + " " + n1.rank + " " + n1.marked);
 
 		for (Node n2 : n1.edges) {
-		    log_.debug(" - " + n2.key);
+		    LOG.debug(" - " + n2.key);
 		}
 	    }
 	}

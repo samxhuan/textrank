@@ -39,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Implements a node value in a TextRank graph.
  *
- * @author Paco NATHAN
+ * @author paco@sharethis.com
  */
 
 public class
@@ -47,7 +47,7 @@ public class
 {
     // logging
 
-    private final static Log log_ =
+    private final static Log LOG =
         LogFactory.getLog(NodeValue.class.getName());
 
 

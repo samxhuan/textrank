@@ -43,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * A singleton class implementing a cache of scanned sentences.
  *
- * @author Paco NATHAN
+ * @author paco@sharethis.com
  */
 
 public class
@@ -52,7 +52,7 @@ public class
 {
     // logging
 
-    private final static Log log_ =
+    private final static Log LOG =
         LogFactory.getLog(Cache.class.getName());
 
 
@@ -69,12 +69,8 @@ public class
 
     public
 	Cache ()
+	throws Exception
     {
-	try {
-	    md_sent = MessageDigest.getInstance("MD5");
-	}
-	catch (Exception e) {
-	    System.err.println("cannot load MD5: " + e.getMessage());
-	}
+	md_sent = MessageDigest.getInstance("MD5");
     }
 }

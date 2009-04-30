@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project
- name="mapred"
+ name="textrank"
  default="rank"
  basedir="."
 >
@@ -110,6 +110,7 @@ http://github.com/sharethis/textrank/
 <target
  name="compile"
  description="compile all Java classes"
+ depends="clean"
 >
 <mkdir dir="${build.dir}"/>
 <javac
@@ -127,6 +128,7 @@ http://github.com/sharethis/textrank/
 <target
  name="jar"
  description="build a JAR"
+ depends="compile"
 >
 <jar
  destfile="${app.jar}"
@@ -140,12 +142,13 @@ http://github.com/sharethis/textrank/
 
 
 <target
-  name="rank"
-  description="misc. testing"
+ name="rank"
+ description="misc. testing"
+ depends="compile"
 >
 <property
  name="data.file"
- location="${basedir}/sample.txt"
+ location="${basedir}/test/good.txt"
 />
 <property
  name="lang.code"

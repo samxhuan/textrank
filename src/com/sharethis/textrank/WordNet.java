@@ -60,8 +60,8 @@ import org.jdom.xpath.XPath;
 
 /**
  * Access to WordNet through JWNL.
- * @author Paco NATHAN
- * @author Flo Leibert
+ * @author paco@sharethis.com
+ * @author flo@leibert.de
  */
 
 public class
@@ -69,7 +69,7 @@ public class
 {
     // logging
 
-    private final static Log log_ =
+    private final static Log LOG =
         LogFactory.getLog(WordNet.class.getName());
 
 
@@ -82,37 +82,33 @@ public class
 
 
     /**
-     * Factory method.
+     * Singleton
      */
 
     public static void
-	buildDictionary (final String resource_path)
+	buildDictionary (final String res_path, final String lang_code)
+	throws Exception
     {
-        try {
-	    InputStream propertiesStream = null;
+	// initialize the JWNL properties
 
-	    // initialize the JWNL properties
+	if (!JWNL.isInitialized()) {
+	    final String model_path =
+		res_path + "/" + lang_code;
 
-	    if (!JWNL.isInitialized()) {
-		propertiesStream =
-		    buildPropertiesStream("wn_file_props.xml",
-					  "/param[@name='file_manager']/param[@name='dictionary_path']",
-					  resource_path,
-					  "wn"
-					  );
+	    final InputStream propertiesStream =
+		buildPropertiesStream("wn_file_props.xml",
+				      "/param[@name='file_manager']/param[@name='dictionary_path']",
+				      model_path,
+				      "wn"
+				      );
 
-		JWNL.initialize(propertiesStream);
+	    JWNL.initialize(propertiesStream);
 
-		// build instances
+	    // build instances
 
-		dictionary = Dictionary.getInstance();
-		mp = dictionary.getMorphologicalProcessor();
-	    }
+	    dictionary = Dictionary.getInstance();
+	    mp = dictionary.getMorphologicalProcessor();
 	}
-        catch (Exception e) {
-	    log_.error(e);
-            e.printStackTrace();
-        }
     }
 
 

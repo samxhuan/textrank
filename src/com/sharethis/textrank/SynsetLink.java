@@ -46,8 +46,8 @@ import org.apache.commons.logging.LogFactory;
  * Implements a node value in a TextRank graph denoting a synset in
  * WordNet.
  *
- * @author Paco NATHAN
- * @author Flo Leibert
+ * @author paco@sharethis.com
+ * @author flo@leibert.de
  */
 
 public class
@@ -56,7 +56,7 @@ public class
 {
     // logging
 
-    private final static Log log_ =
+    private final static Log LOG =
         LogFactory.getLog(SynsetLink.class.getName());
 
 
@@ -114,15 +114,15 @@ public class
     {
 	final IndexWord iw = WordNet.getLemma(pos, text);
 
-	if (log_.isDebugEnabled()) {
-	    log_.debug("n: " + n.key + " " + n.rank + " " + n.marked + " " + text);
-	    log_.debug(iw);
+	if (LOG.isDebugEnabled()) {
+	    LOG.debug("n: " + n.key + " " + n.rank + " " + n.marked + " " + text);
+	    LOG.debug(iw);
 	}
 
 	if (iw != null) {
 	    for (Synset synset : iw.getSenses()) {
-		if (log_.isDebugEnabled()) {
-		    log_.debug("synset: " + synset);
+		if (LOG.isDebugEnabled()) {
+		    LOG.debug("synset: " + synset);
 		}
 
 		final Node node_synset = testLink(subgraph, synset, n, MyRelation.SYNONYM, 1);
@@ -133,8 +133,8 @@ public class
 		    for (Pointer hypernym : hypernyms) {
 			final Synset hypernym_synset = hypernym.getTargetSynset();
 
-			if (log_.isDebugEnabled()) {
-			    log_.debug("hypernym: " + hypernym_synset);
+			if (LOG.isDebugEnabled()) {
+			    LOG.debug("hypernym: " + hypernym_synset);
 			}
 
 			final Node node_hypernym = testLink(subgraph, hypernym_synset, node_synset, MyRelation.HYPERNYM, 2);
@@ -146,8 +146,8 @@ public class
 				final Synset sibling_synset = sibling.getTargetSynset();
 
 				if (sibling_synset.getOffset() != synset.getOffset()) {
-				    if (log_.isDebugEnabled()) {
-					log_.debug("sibling: " + sibling_synset);
+				    if (LOG.isDebugEnabled()) {
+					LOG.debug("sibling: " + sibling_synset);
 				    }
 
 				    final Node node_sibling = testLink(subgraph, sibling_synset, node_hypernym, MyRelation.SIBLING, 3);
@@ -191,9 +191,9 @@ public class
 
 	    node.connect(parent);
 
-	    if (log_.isDebugEnabled()) {
-		log_.debug("mark key on " + synset_key);
-		log_.debug("mark hit on " + node.value);
+	    if (LOG.isDebugEnabled()) {
+		LOG.debug("mark key on " + synset_key);
+		LOG.debug("mark hit on " + node.value);
 	    }
 
 	    markAncestors(node);
@@ -216,8 +216,8 @@ public class
 	// recursively mark through found node's parent links, if not marked already
 
 	if (!node.marked) {
-	    if (log_.isDebugEnabled()) {
-		log_.debug("marking: " + node.key);
+	    if (LOG.isDebugEnabled()) {
+		LOG.debug("marking: " + node.key);
 	    }
 
 	    node.marked = true;
@@ -225,8 +225,8 @@ public class
 	    if (node.value instanceof SynsetLink) {
 		final SynsetLink synset_link = (SynsetLink) node.value;
 
-		if (log_.isDebugEnabled()) {
-		    log_.debug("recur marking: " + synset_link.synset);
+		if (LOG.isDebugEnabled()) {
+		    LOG.debug("recur marking: " + synset_link.synset);
 		}
 
 		markAncestors(synset_link.parent);
@@ -236,7 +236,7 @@ public class
 
 
     /**
-     *
+     * Prune the graph.
      */
 
     public static Graph
@@ -248,7 +248,8 @@ public class
 	    if (n.marked) {
 		graph.put(n.key, n);
 		new_subgraph.put(n.key, n);
-	    } else {
+	    }
+	    else {
 		final SynsetLink s = (SynsetLink) n.value;
 		n.disconnect(s.parent);
 	    }

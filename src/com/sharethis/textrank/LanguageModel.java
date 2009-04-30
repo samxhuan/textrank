@@ -32,59 +32,52 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.sharethis.textrank;
 
-import java.io.File;
-
-import opennlp.tools.lang.english.ParserTagger;
-import opennlp.tools.lang.english.SentenceDetector;
-import opennlp.tools.lang.english.Tokenizer;
-import opennlp.tools.sentdetect.SentenceDetectorME;
-import opennlp.tools.util.Sequence;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.tartarus.snowball.ext.englishStemmer;
-
 
 /**
- * Implementation of English-specific tools for natural language
+ * Facade for handling language-specific tools in natural language
  * processing.
  *
  * @author paco@sharethis.com
  */
 
-public class
-    LanguageEnglish
-    extends LanguageModel
+public abstract class
+    LanguageModel
 {
     // logging
 
     private final static Log LOG =
-        LogFactory.getLog(LanguageEnglish.class.getName());
+        LogFactory.getLog(LanguageModel.class.getName());
 
 
     /**
      * Public definitions.
      */
 
-    public static SentenceDetectorME splitter_en = null;
-    public static Tokenizer tokenizer_en = null;
-    public static ParserTagger tagger_en = null;
-    public static englishStemmer stemmer_en = null;
+    public final static int TOKEN_LENGTH_LIMIT = 50;
 
 
     /**
-     * Constructor. Not quite a Singleton pattern but close enough
-     * given the resources required to be loaded ONCE.
+     * Factory method, loads libraries for OpenNLP based on the given
+     * language code.
      */
 
-    public
-	LanguageEnglish (final String path)
+    public static LanguageModel
+	buildLanguage (final String resource_path, final String lang_code)
 	throws Exception
     {
-	if (splitter_en == null) {
-	    loadResources(path);
+	LanguageModel lang = null;
+
+	if ("en".equals(lang_code)) {
+	    lang = new LanguageEnglish(resource_path + "/" + lang_code);
 	}
+	else if ("es".equals(lang_code)) {
+	    lang = new LanguageSpanish(resource_path + "/" + lang_code);
+	}
+
+	return lang;
     }
 
 
@@ -92,74 +85,37 @@ public class
      * Load libraries for OpenNLP for this specific language.
      */
 
-    public void
+    public abstract void
 	loadResources (final String path)
 	throws Exception
-    {
-	splitter_en =
-		new SentenceDetector((new File(path, "opennlp/EnglishSD.bin.gz")).getPath());
-
-	tokenizer_en =
-	    new Tokenizer((new File(path, "opennlp/EnglishTok.bin.gz")).getPath());
-
-	tagger_en =
-	    new ParserTagger((new File(path, "opennlp/tag.bin.gz")).getPath(),
-			     (new File(path, "opennlp/tagdict")).getPath(),
-			     false
-			     );
-
-	stemmer_en =
-	    new englishStemmer();
-    }
+	;
 
 
     /**
      * Split sentences within the paragraph text.
      */
 
-    public String[]
+    public abstract String[]
 	splitParagraph (final String text)
-    {
-	return splitter_en.sentDetect(text);
-    }
+	;
 
 
     /**
      * Tokenize the sentence text into an array of tokens.
      */
 
-    public String[]
+    public abstract String[]
 	tokenizeSentence (final String text)
-    {
-	final String[] token_list = tokenizer_en.tokenize(text);
-
-	for (int i = 0; i < token_list.length; i++) {
-	    token_list[i] = token_list[i].replace("\"", "").toLowerCase().trim();
-	}
-
-	return token_list;
-    }
+	;
 
 
     /**
      * Run a part-of-speech tagger on the sentence token list.
      */
 
-    public String[]
+    public abstract String[]
 	tagTokens (final String[] token_list)
-    {
-	final Sequence[] sequences = tagger_en.topKSequences(token_list);
-	final String[] tag_list = new String[token_list.length];
-
-	int i = 0;
-
-	for (Object obj : sequences[0].getOutcomes()) {
-	    tag_list[i] = (String) obj;
-	    i++;
-	}
-
-	return tag_list;
-    }
+	;
 
 
     /**
@@ -167,11 +123,21 @@ public class
      * from a token.
      */
 
-    public String
+    public abstract String
 	getNodeKey (final String text, final String pos)
         throws Exception
+	;
+
+
+    /**
+     * Determine whether the given PoS tag is relevant to add to the
+     * graph.
+     */
+
+    public boolean
+	isRelevant (final String pos)
     {
-	return pos.substring(0, 2) + stemToken(scrubToken(text)).toLowerCase();
+	return isNoun(pos) || isAdjective(pos);
     }
 
 
@@ -179,34 +145,47 @@ public class
      * Determine whether the given PoS tag is a noun.
      */
 
-    public boolean
+    public abstract boolean
 	isNoun (final String pos)
-    {
-	return pos.startsWith("NN");
-    }
+	;
 
 
     /**
      * Determine whether the given PoS tag is an adjective.
      */
 
-    public boolean
+    public abstract boolean
 	isAdjective (final String pos)
-    {
-	return pos.startsWith("JJ");
-    }
+	;
 
 
     /**
      * Perform stemming on the given token.
      */
 
-    public String
+    public abstract String
 	stemToken (final String token)
-    {
-	stemmer_en.setCurrent(token);
-	stemmer_en.stem();
+	;
 
-	return stemmer_en.getCurrent();
+
+    /**
+     * Clean the text for a token.
+     *
+     * @param token_text input text for a token.
+     * @return clean text
+     * @throws Exception in case of any problem.
+     */
+
+    public String
+        scrubToken (final String token_text)
+        throws Exception
+    {
+        String scrubbed = token_text;
+
+        if (scrubbed.length() > TOKEN_LENGTH_LIMIT) {
+            scrubbed = scrubbed.substring(0, TOKEN_LENGTH_LIMIT);
+        }
+
+        return scrubbed;
     }
 }

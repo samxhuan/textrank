@@ -41,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
 
 
 /**
- * @author Paco NATHAN
+ * @author paco@sharethis.com
  */
 
 public class
@@ -49,7 +49,7 @@ public class
 {
     // logging
 
-    private final static Log log_ =
+    private final static Log LOG =
         LogFactory.getLog(Sentence.class.getName());
 
 
@@ -88,7 +88,8 @@ public class
 
 	    if (h.length() == 1) {
 		sb.append("0");
-	    } else if (h.length() == 8) {
+	    }
+	    else if (h.length() == 8) {
 		h = h.substring(6);
 	    }
 
@@ -104,7 +105,7 @@ public class
      */
 
     public void
-	mapTokens (final Language lang, final Cache cache, final Graph graph)
+	mapTokens (final LanguageModel lang, final Cache cache, final Graph graph)
 	throws Exception
     {
 	token_list = lang.tokenizeSentence(text);
@@ -114,8 +115,8 @@ public class
 	cache.md_sent.reset();
 
 	for (int i = 0; i < token_list.length; i++) {
-	    if (log_.isDebugEnabled()) {
-		log_.debug("token: " + token_list[i]);
+	    if (LOG.isDebugEnabled()) {
+		LOG.debug("token: " + token_list[i]);
 	    }
 
 	    cache.md_sent.update(token_list[i].getBytes());
@@ -144,8 +145,8 @@ public class
 	    for (int i = 0; i < token_list.length; i++) {
 		final String pos = tag_list[i];
 
-		if (log_.isDebugEnabled()) {
-		    log_.debug("token: " + token_list[i] + " pos tag: " + pos);
+		if (LOG.isDebugEnabled()) {
+		    LOG.debug("token: " + token_list[i] + " pos tag: " + pos);
 		}
 
 		if (lang.isRelevant(pos)) {

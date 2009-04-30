@@ -45,8 +45,11 @@ import java.io.Reader;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import java.util.concurrent.Callable;
 
 import net.didion.jwnl.data.POS;
 
@@ -65,6 +68,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 public class
     TextRank
+    implements Callable<Map<NGram, MetricVector>>
 {
     // logging
 
@@ -86,12 +90,15 @@ public class
      * Protected members.
      */
 
-    protected final Cache cache = new Cache();
-    protected final Graph graph = new Graph();
-    protected final HashMap<NGram, MetricVector> metric_space = new HashMap<NGram, MetricVector>();
+    protected LanguageModel lang = null;
 
-    protected Language lang = null;
+    protected String text = null;
+    protected boolean use_wordnet = false;
+
+    protected Cache cache = null;
+    protected Graph graph = null;
     protected Graph ngram_subgraph = null;
+    protected Map<NGram, MetricVector> metric_space = null;
 
     protected long start_time = 0L;
     protected long elapsed_time = 0L;
@@ -102,134 +109,41 @@ public class
      */
 
     public
-	TextRank (final String lang_code, final String res_path)
-    {
-	this.lang = Language.buildLanguage(lang_code, res_path);
-	WordNet.buildDictionary(res_path + "/" + lang_code);
-    }
-
-
-    /**
-     * Re-initialize the timer.
-     */
-
-    public void
-	initTime ()
-    {
-	start_time = System.currentTimeMillis();
-    }
-
-
-    /**
-     * Report the elapsed time with a label.
-     */
-
-    public void
-	markTime (final String label)
-    {
-	elapsed_time = System.currentTimeMillis() - start_time;
-
-	if (LOG.isInfoEnabled()) {
-	    LOG.info("ELAPSED_TIME:\t" + elapsed_time + "\t" + label);
-	}
-    }
-
-
-    /**
-     * Serialize the graph to a file which can be rendered.
-     */
-
-    public void
-	serializeGraph (final String graph_file)
+	TextRank (final String res_path, final String lang_code)
 	throws Exception
     {
-	for (Node n : graph.values()) {
-	    n.marked = false;
-	}
-
-	final TreeSet<String> entries = new TreeSet<String>();
-
-	for (Node n : ngram_subgraph.values()) {
-	    final NGram gram = (NGram) n.value;
-	    final MetricVector mv = metric_space.get(gram);
-
-	    if (mv != null) {
-		final StringBuilder sb = new StringBuilder();
-
-		sb.append("rank").append('\t');
-		sb.append(n.getId()).append('\t');
-		sb.append(mv.render());
-		entries.add(sb.toString());
-
-		n.serializeGraph(entries);
-	    }
-	}
-
-        final OutputStreamWriter fw =
-	    new OutputStreamWriter(new FileOutputStream(graph_file), "UTF-8");
-						   
-        try {
-	    for (String entry : entries) {
-		fw.write(entry, 0, entry.length());
-		fw.write('\n');
-	    }
-        }
-	finally {
-            fw.close();
-        }
+	lang = LanguageModel.buildLanguage(res_path, lang_code);
+	WordNet.buildDictionary(res_path, lang_code);
     }
 
 
     /**
-     * Serialize resulting graph to a string.
+     * Prepare to call algorithm with a new text to analyze.
      */
 
-    public String
-	toString ()
+    public void
+	prepCall (final String text, final boolean use_wordnet)
+	throws Exception
     {
-	final TreeSet<MetricVector> key_phrase_list = new TreeSet<MetricVector>(metric_space.values());
-	final StringBuilder sb = new StringBuilder();
 
-	for (MetricVector mv : key_phrase_list) {
-	    if (mv.metric >= MIN_NORMALIZED_RANK) {
-		sb.append(mv.render()).append("\t").append(mv.value.text).append("\n");
-	    }
-	}
+	cache = new Cache();
+	graph = new Graph();
+	ngram_subgraph = null;
+	metric_space = new HashMap<NGram, MetricVector>();
 
-	return sb.toString();
-    }
-
-
-    /**
-     * Accessor for the graph.
-     */
-
-    public Graph
-	getGraph ()
-    {
-	return graph;
-    }
-
-
-    /**
-     * Accessor for the resulting key phrase list.
-     */
-
-    public HashMap<NGram, MetricVector>
-	getMetricSpace ()
-    {
-	return metric_space;
+	this.text = text;
+	this.use_wordnet = use_wordnet;
     }
 
 
     /**
      * Run the TextRank algorithm on the given semi-structured text
-     * (e.g., HtmlParser results from crawled web content) to build a
-     * graph of weighted key phrases.
+     * (e.g., results of parsed HTML from crawled web content) to
+     * build a graph of weighted key phrases.
      */
 
-    public void
-	buildGraph (final String text, final boolean use_wordnet)
+    public Map<NGram, MetricVector>
+	call ()
 	throws Exception
     {
 	//////////////////////////////////////////////////
@@ -389,6 +303,116 @@ public class
 	}
 
 	markTime("normalize_ranks");
+
+	// return results
+
+	return metric_space;
+    }
+
+
+    //////////////////////////////////////////////////////////////////////
+    // access and utility methods
+    //////////////////////////////////////////////////////////////////////
+
+    /**
+     * Re-initialize the timer.
+     */
+
+    public void
+	initTime ()
+    {
+	start_time = System.currentTimeMillis();
+    }
+
+
+    /**
+     * Report the elapsed time with a label.
+     */
+
+    public void
+	markTime (final String label)
+    {
+	elapsed_time = System.currentTimeMillis() - start_time;
+
+	if (LOG.isInfoEnabled()) {
+	    LOG.info("ELAPSED_TIME:\t" + elapsed_time + "\t" + label);
+	}
+    }
+
+
+    /**
+     * Accessor for the graph.
+     */
+
+    public Graph
+	getGraph ()
+    {
+	return graph;
+    }
+
+
+    /**
+     * Serialize the graph to a file which can be rendered.
+     */
+
+    public void
+	serializeGraph (final String graph_file)
+	throws Exception
+    {
+	for (Node n : graph.values()) {
+	    n.marked = false;
+	}
+
+	final TreeSet<String> entries = new TreeSet<String>();
+
+	for (Node n : ngram_subgraph.values()) {
+	    final NGram gram = (NGram) n.value;
+	    final MetricVector mv = metric_space.get(gram);
+
+	    if (mv != null) {
+		final StringBuilder sb = new StringBuilder();
+
+		sb.append("rank").append('\t');
+		sb.append(n.getId()).append('\t');
+		sb.append(mv.render());
+		entries.add(sb.toString());
+
+		n.serializeGraph(entries);
+	    }
+	}
+
+        final OutputStreamWriter fw =
+	    new OutputStreamWriter(new FileOutputStream(graph_file), "UTF-8");
+						   
+        try {
+	    for (String entry : entries) {
+		fw.write(entry, 0, entry.length());
+		fw.write('\n');
+	    }
+        }
+	finally {
+            fw.close();
+        }
+    }
+
+
+    /**
+     * Serialize resulting graph to a string.
+     */
+
+    public String
+	toString ()
+    {
+	final TreeSet<MetricVector> key_phrase_list = new TreeSet<MetricVector>(metric_space.values());
+	final StringBuilder sb = new StringBuilder();
+
+	for (MetricVector mv : key_phrase_list) {
+	    if (mv.metric >= MIN_NORMALIZED_RANK) {
+		sb.append(mv.render()).append("\t").append(mv.value.text).append("\n");
+	    }
+	}
+
+	return sb.toString();
     }
 
 
@@ -423,10 +447,6 @@ public class
 
 	final String text = IOUtils.readFile(data_file);
 
-	// instantiate the TextRank object
-
-	final TextRank tr = new TextRank(lang_code, res_path);
-
 	// filter out overly large files
 
 	boolean use_wordnet = true; // false
@@ -438,7 +458,11 @@ public class
 
 	// main entry point for the algorithm
 
-	tr.buildGraph(text, use_wordnet);
+	final TextRank tr = new TextRank(res_path, lang_code);
+
+	tr.prepCall(text, use_wordnet);
+	tr.call();
+
 	LOG.info(tr);
     }
 }

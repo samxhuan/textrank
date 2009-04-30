@@ -39,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Track the context within a sentence for a selected n-gram.
  *
- * @author Paco NATHAN
+ * @author paco@sharethis.com
  */
 
 public class
@@ -47,7 +47,7 @@ public class
 {
     // logging
 
-    private final static Log log_ =
+    private final static Log LOG =
         LogFactory.getLog(Context.class.getName());
 
 

@@ -42,7 +42,7 @@ import org.apache.commons.math.util.MathUtils;
  * Implements a point in the vector space representing the distance
  * metric.
  *
- * @author Paco NATHAN
+ * @author paco@sharethis.com
  */
 
 public class
@@ -51,7 +51,7 @@ public class
 {
     // logging
 
-    private final static Log log_ =
+    private final static Log LOG =
         LogFactory.getLog(MetricVector.class.getName());
 
 
@@ -85,8 +85,8 @@ public class
 	this.count_rank = MathUtils.round(count_rank, 2);
 	this.synset_rank = MathUtils.round(synset_rank, 2);
 
-	if (log_.isDebugEnabled()) {
-	    log_.debug("mv: " + metric + " " + link_rank + " " + count_rank + " " + synset_rank + " " + value.text);
+	if (LOG.isDebugEnabled()) {
+	    LOG.debug("mv: " + metric + " " + link_rank + " " + count_rank + " " + synset_rank + " " + value.text);
 	}
     }
 
@@ -100,9 +100,11 @@ public class
     {
         if (this.metric > that.metric) {
 	    return -1;
-	} else if (this.metric < that.metric) {
+	}
+	else if (this.metric < that.metric) {
 	    return 1;
-	} else {
+	}
+	else {
 	    return this.value.text.compareTo(that.value.text);
 	}
     }
