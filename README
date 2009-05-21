@@ -3,8 +3,14 @@ Open source Java implementation of the TextRank algorithm by Mihalcea, et al.
 See also:
   http://lit.csci.unt.edu/index.php/Graph-based_NLP
 
-Paco NATHAN    paco@sharethis.com
-http://github.com/sharethis/textrank/
+Author:
+  Paco NATHAN    paco@sharethis.com
+
+GitHub code repo:
+  http://github.com/sharethis/textrank/
+
+GoogleGroups discussion:
+  http://groups.google.com/group/textrank-dev
 
 
 NB: there is a known issue with use of JWNL (Java libraries for
