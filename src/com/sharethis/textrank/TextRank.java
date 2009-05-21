@@ -499,6 +499,6 @@ public class
 	    return;
 	}
 
-	LOG.info(tr);
+	LOG.info("\n" + tr);
     }
 }
