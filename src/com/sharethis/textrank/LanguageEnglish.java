@@ -45,6 +45,8 @@ import org.apache.commons.logging.LogFactory;
 
 import org.tartarus.snowball.ext.englishStemmer;
 
+import spiaotools.SentParDetector;
+
 
 /**
  * Implementation of English-specific tools for natural language
@@ -67,7 +69,10 @@ public class
      * Public definitions.
      */
 
+    public static SentParDetector splitter_en = null;
+    /** /
     public static SentenceDetectorME splitter_en = null;
+    /* */
     public static Tokenizer tokenizer_en = null;
     public static ParserTagger tagger_en = null;
     public static englishStemmer stemmer_en = null;
@@ -96,8 +101,12 @@ public class
 	loadResources (final String path)
 	throws Exception
     {
+	splitter_en = new SentParDetector();
+
+	/** /
 	splitter_en =
 		new SentenceDetector((new File(path, "opennlp/EnglishSD.bin.gz")).getPath());
+	/* */
 
 	tokenizer_en =
 	    new Tokenizer((new File(path, "opennlp/EnglishTok.bin.gz")).getPath());
@@ -120,7 +129,11 @@ public class
     public String[]
 	splitParagraph (final String text)
     {
+	return splitter_en.markupRawText(2, text).split("\\n");
+
+	/** /
 	return splitter_en.sentDetect(text);
+	/* */
     }
 
 
