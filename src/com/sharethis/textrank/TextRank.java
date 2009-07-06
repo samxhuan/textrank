@@ -43,6 +43,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -101,7 +102,6 @@ public class
     protected String text = null;
     protected boolean use_wordnet = false;
 
-    protected Cache cache = null;
     protected Graph graph = null;
     protected Graph ngram_subgraph = null;
     protected Map<NGram, MetricVector> metric_space = null;
@@ -131,8 +131,6 @@ public class
 	prepCall (final String text, final boolean use_wordnet)
 	throws Exception
     {
-
-	cache = new Cache();
 	graph = new Graph();
 	ngram_subgraph = null;
 	metric_space = new HashMap<NGram, MetricVector>();
@@ -159,9 +157,12 @@ public class
 
 	// scan sentences to construct a graph of relevent morphemes
 
+	final ArrayList<Sentence> s_list = new ArrayList<Sentence>();
+
 	for (String sent_text : lang.splitParagraph(text)) {
 	    final Sentence s = new Sentence(sent_text.trim());
-	    s.mapTokens(lang, cache, graph);
+	    s.mapTokens(lang, graph);
+	    s_list.add(s);
 
 	    if (LOG.isDebugEnabled()) {
 		LOG.debug("s: " + s.text);
@@ -182,7 +183,7 @@ public class
 	graph.runTextRank();
 	graph.sortResults(max_results);
 
-	ngram_subgraph = NGram.collectNGrams(lang, cache, graph.getRankThreshold());
+	ngram_subgraph = NGram.collectNGrams(lang, s_list, graph.getRankThreshold());
 
 	markTime("basic_textrank");
 

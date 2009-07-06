@@ -105,64 +105,40 @@ public class
      */
 
     public void
-	mapTokens (final LanguageModel lang, final Cache cache, final Graph graph)
+	mapTokens (final LanguageModel lang, final Graph graph)
 	throws Exception
     {
 	token_list = lang.tokenizeSentence(text);
 
-	// determine an MD5 signature for this sentence
+	// scan each token to determine part-of-speech
 
-	cache.md_sent.reset();
+	final String[] tag_list = lang.tagTokens(token_list);
+
+	// create nodes for the graph
+
+	Node last_node = null;
+	node_list = new Node[token_list.length];
 
 	for (int i = 0; i < token_list.length; i++) {
+	    final String pos = tag_list[i];
+
 	    if (LOG.isDebugEnabled()) {
-		LOG.debug("token: " + token_list[i]);
+		LOG.debug("token: " + token_list[i] + " pos tag: " + pos);
 	    }
 
-	    cache.md_sent.update(token_list[i].getBytes());
-	}
+	    if (lang.isRelevant(pos)) {
+		final String key = lang.getNodeKey(token_list[i], pos);
+		final KeyWord value = new KeyWord(token_list[i], pos);
+		final Node n = Node.buildNode(graph, key, value);
 
-	md5_hash = hexFormat(cache.md_sent.digest());
+		// emit nodes to construct the graph
 
-	// use MD5 hash to lookup sentence in the cache
-
-	final Sentence cache_hit = cache.get(md5_hash);
-
-	if (cache_hit == null) {
-	    // add another scanned sentence to the cache
-
-	    cache.put(md5_hash, this);
-
-	    // scan each token to determine part-of-speech
-
-	    final String[] tag_list = lang.tagTokens(token_list);
-
-	    // create nodes for the graph
-
-	    Node last_node = null;
-	    node_list = new Node[token_list.length];
-
-	    for (int i = 0; i < token_list.length; i++) {
-		final String pos = tag_list[i];
-
-		if (LOG.isDebugEnabled()) {
-		    LOG.debug("token: " + token_list[i] + " pos tag: " + pos);
+		if (last_node != null) {
+		    n.connect(last_node);
 		}
 
-		if (lang.isRelevant(pos)) {
-		    final String key = lang.getNodeKey(token_list[i], pos);
-		    final KeyWord value = new KeyWord(token_list[i], pos);
-		    final Node n = Node.buildNode(graph, key, value);
-
-		    // emit nodes to construct the graph
-
-		    if (last_node != null) {
-			n.connect(last_node);
-		    }
-
-		    last_node = n;
-		    node_list[i] = n;
-		}
+		last_node = n;
+		node_list[i] = n;
 	    }
 	}
     }

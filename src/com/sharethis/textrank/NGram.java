@@ -35,6 +35,7 @@ package com.sharethis.textrank;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -196,13 +197,13 @@ public class
      */
 
     public static Graph
-	collectNGrams (final LanguageModel lang, final Cache cache, final double rank_threshold)
+	collectNGrams (final LanguageModel lang, final List<Sentence> s_list, final double rank_threshold)
 	throws Exception
     {
 	final Graph ngrams = new Graph();
 	final LinkedList<Integer> token_span = new LinkedList<Integer>();
 
-	for (Sentence s : cache.values()) {
+	for (Sentence s : s_list) {
 	    boolean span_marked = false;
 	    double max_rank = 0.0D;
 
