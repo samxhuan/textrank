@@ -1,3 +1,6 @@
+see updates: https://github.com/DerwenAI/pytextrank
+
+
 Open source Java implementation of the TextRank algorithm by Mihalcea,
 et al. Note that this code only implements key phrase extraction based
 on keyword co-occurance described in section 3 of the Mihalcea-Tarau
