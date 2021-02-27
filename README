@@ -1,26 +1,16 @@
-see updates: https://github.com/DerwenAI/pytextrank
+For ongoing work, see <https://derwen.ai/docs/ptr/>
 
 
-Open source Java implementation of the TextRank algorithm by Mihalcea,
-et al. Note that this code only implements key phrase extraction based
-on keyword co-occurance described in section 3 of the Mihalcea-Tarau
-paper. This code does not yet implement the sentence extraction
-described in section 4 of that paper.
+This is an open source Java implementation of the TextRank algorithm 
+by Mihalcea, et al. 
 
-See also:
-  http://lit.csci.unt.edu/index.php/Graph-based_NLP
+Note that this code only implements key phrase extraction based on 
+keyword co-occurance described in section 3 of the Mihalcea-Tarau paper.
+This code does not yet implement the sentence extraction described in 
+section 4 of that paper.
 
-GitHub code repo:
-  http://github.com/ceteri/textrank/
-
-GoogleGroups discussion:
-  http://groups.google.com/group/textrank-dev
-
-
-Paco NATHAN
-pacoid@cs.stanford.edu
-@pacoid
-http://www.google.com/profiles/ceteri
+"Graph-Based Data Science" discussion group on LinkedIn:
+  <https://www.linkedin.com/groups/6725785/>
 
 
 NB: There is a known issue with use of JWNL (Java libraries for
