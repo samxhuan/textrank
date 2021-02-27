@@ -34,6 +34,24 @@ test with a specific data file FOO.txt
 build the JAR for export to another project:
 	ant jar
 
+
+Alternatively, if you use Gradle, we have also supplied a build.gradle and
+a Gradle wrapper here:
+
+	./gradlew build
+
+The wrapper installs ("bootstraps") Gradle the first time you run it.
+
+The Gradle build step combines all dependent JARs into one, and so you can
+just use the resulting JAR:
+
+	java -cp build/libs/ceteri-textrank.jar com.sharethis.textrank.TextRank res/log4j.properties res en test/good.txt graph.tsv
+
+This tells TextRank.main() to use the log4j settings and the data in res/,
+use English as the working language, use test/good.txt as input, and serialize
+the graph to graph.tsv (this is not implemented in main(), but the argument
+is still required).
+
 ---------
 
 Sources for third-party JAR files:

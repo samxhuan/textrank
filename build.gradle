@@ -1,0 +1,26 @@
+apply plugin: 'java'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+        resources {
+            srcDir 'res'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree('./lib').include('*.jar')
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "com.sharethis.textrank.TextRank"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
